@@ -4,10 +4,13 @@ server = TCPServer.open(2000)
 loop {
   client = server.accept
 
-  request = client.gets.scan(/^(\S+) (\S+) (\S+)/).flatten
-  method = request[0]
-  filename = request[1][1..-1] 
-  protocol = request[2]
+  request = client.gets.chomp
+  header = request.scan(/\S+/).flatten
+  method = header[0]
+  filename = header[1][1..-1] 
+  protocol = header[2]
+
+  puts request
 
   case method
   when 'GET'
@@ -16,9 +19,6 @@ loop {
     if file_exists
       client.puts "#{protocol} 200 OK"
       client.puts("Date: #{Time.now.ctime}")
-
-      content_type = filename.scan(/\w+$/)[0]
-      client.puts "Content-Type: #{content_type}"
 
       content = File.read(filename)
       client.puts "Content-Length: #{content.size}"
@@ -30,6 +30,14 @@ loop {
       client.puts("Date: #{Time.now.ctime}")
     end
 
+  when 'POST'
+    puts client.gets
+    puts
+    data = client.gets.chomp
+    puts data
+
+    client.puts "#{protocol} 200 OK"
+    client.puts("Date: #{Time.now.ctime}")
   else
     client.puts "#{protocol} 500 Unknown Method"
     client.puts("Date: #{Time.now.ctime}")
