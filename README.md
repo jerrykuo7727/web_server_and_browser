@@ -1,2 +1,2 @@
 # Simple Web Server and Browser
-It can transfer and parse the GET and POST request.
+A simple server and browser capable of transfering and parsing GET and POST request.
